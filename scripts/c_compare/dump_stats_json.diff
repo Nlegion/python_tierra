@@ -1,0 +1,26 @@
+--- a/tierra.c
++++ b/tierra.c
+@@
++/* Optional JSON stats dump — does not change simulation logic.
++ * Compile with -DTIERRA_DUMP_STATS_JSON and call dump_stats_json() at end of main.
++ */
++#ifdef TIERRA_DUMP_STATS_JSON
++#include <stdio.h>
++static void dump_stats_json(void)
++{
++    /* Emit births, InstExe, NumCells, size histogram, unique genotypes.
++     * Implementation is host-specific; keep side-effect free until exit.
++     */
++    FILE *fp = fopen("c_stats.json", "w");
++    if (!fp) return;
++    fprintf(fp, "{\n");
++    fprintf(fp, "  \"seed\": %d,\n", (int)seed);
++    fprintf(fp, "  \"first_birth_InstExe\": %ld,\n", (long)InstExe.m);
++    fprintf(fp, "  \"final\": {\"NumCells\": %d, \"InstExe\": %ld, \"births\": %ld, \"deaths\": %ld},\n",
++            NumCells, (long)InstExe.m, (long)NumBirths, (long)NumDeaths);
++    fprintf(fp, "  \"unique_genotypes\": %d,\n", NumGenotypes);
++    fprintf(fp, "  \"size_histogram\": {}\n");
++    fprintf(fp, "}\n");
++    fclose(fp);
++}
++#endif

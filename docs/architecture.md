@@ -29,13 +29,14 @@ adapters → models + core.errors
 
 ## Tech debt
 
-- No `Protocol` ports yet for `GenomeLoader` / `ConfigLoader`; introduce when a second backend appears.
-- Segment mutation ops (cro/ins/del) are stubs (`genetic_ops_stubs`); see [`docs/segment_mutations_subplan.md`](segment_mutations_subplan.md).
+- Protocol ports exist for genebank/observer/net (`models/ports.py`); filesystem
+  `GenomeLoader` / `ConfigLoader` ports still deferred until a second backend appears.
+- Segment mutation ops: [`mutate_segment.py`](../pytierra/services/mutate_segment.py); see [`segment_mutations_subplan.md`](segment_mutations_subplan.md).
 
 ## Known limitations
 
 - Unknown `soup_in` keys (Beagle/Net/UI, etc.) are ignored with a WARNING — not an error.
-- No Beagle, NET, disk genebank UI, or frontend.
+- Beagle/NET/disk genebank: in-process ports only (see `models/ports.py`, `docs/known_limitations.md`); no TCP/sockets in VM.
 - Multi-inoculum: if a cell cannot be placed (`SoupSize` too small) → `ConfigError` at `start()`.
 - ISA hot path does not use Python `logging` (TraceBuffer only).
 - mut=0 is the acceptance path; mut>0 is evolution mode (CI uses high `GenPer*` for determinism).

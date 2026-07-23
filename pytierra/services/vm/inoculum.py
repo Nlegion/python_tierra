@@ -63,6 +63,27 @@ def inoculate(vm: Any) -> None:
         cell.dem.gen_size = size
         cell.dem.mg_p = 0
         cell.dem.mg_s = size
+        genome = bytes(b & 0xFF for b in code)
+        banker = getattr(vm, "genebank", None)
+        if banker is not None and getattr(banker, "enabled", False):
+            from pytierra.services.genebank.hashutil import default_hash
+
+            cell.dem.gen_name = banker.register_inoculum(
+                name=gname, genome=genome, permanent=True
+            )
+            cell.dem.genome_hash = default_hash(genome)
+            cell.dem.genome_hash_dirty = False
+            # empty mother → lookup permanent inoculum record and bump pop
+            cell.dem.gen_name = banker.on_birth(
+                cell_id=cell.cell_id,
+                size=size,
+                genome=genome,
+                mother_name="",
+                mother_hash=cell.dem.genome_hash,
+                is_migrant=False,
+            )
+        else:
+            cell.dem.genome_hash_dirty = True
         vm.queues.ent_bot_slicer(vm.cells, cell.cell_id)
         vm.queues.ent_bot_reaper(vm.cells, cell.cell_id)
         vm.queues.num_cells += 1

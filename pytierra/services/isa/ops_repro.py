@@ -5,7 +5,8 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from pytierra.services.mutate import genetic_ops_stubs, mutation_ops_div
+from pytierra.services.mutate import mutation_ops_div
+from pytierra.services.mutate_segment import genetic_ops
 
 if TYPE_CHECKING:
     from pytierra.models.isa_state import InstState
@@ -29,6 +30,7 @@ def malchm(ctx: VMContext, is_: InstState) -> None:
         reaper_fn=ctx.reap_one,
     )
     if not got:
+        ctx.counters["mal_fail"] = ctx.counters.get("mal_fail", 0) + 1
         ce.cpu.fl.E = 1
         return
     if is_.dreg_i >= 0:
@@ -49,8 +51,7 @@ def divide(ctx: VMContext, is_: InstState) -> None:
         ce.cpu.fl.E = 1
         return
 
-    # mode 2 split (gb0 divide has flag C)
-    mutation_ops_div(
+    div_mutated = mutation_ops_div(
         ce,
         ctx.mem,
         rng=ctx.rng,
@@ -60,7 +61,13 @@ def divide(ctx: VMContext, is_: InstState) -> None:
         inst_bit_num=ctx.inst_bit_num,
         counters=ctx.counters,
     )
-    genetic_ops_stubs(ctx.counters, ctx.cfg_values)
+    seg_changed = genetic_ops(ctx)
+    daughter_dirty = bool(
+        div_mutated
+        or seg_changed
+        or ctx.counters.pop("_daughter_genome_dirty", 0)
+        or ce.dem.nonslfmut
+    )
 
     dgen = ce.dem.MovOffMax - ce.dem.MovOffMin + 1
     if ce.md_s < ctx.min_cell_size or dgen < ctx.min_gen_mem_siz:
@@ -79,6 +86,12 @@ def divide(ctx: VMContext, is_: InstState) -> None:
     nc.dem.gen_size = dgen
     nc.dem.gen_name = f"{dgen:04d}???"
     nc.dem.dm = 0
+    if daughter_dirty:
+        nc.dem.genome_hash_dirty = True
+        nc.dem.genome_hash = None
+    else:
+        nc.dem.genome_hash = ce.dem.genome_hash
+        nc.dem.genome_hash_dirty = ce.dem.genome_hash is None
     nc.cpu.ip = nc.mm_p
     nc.cpu.re = list(ce.cpu.re)
     ctx.queues.ent_bot_slicer(ctx.cells, nc.cell_id)
@@ -94,7 +107,8 @@ def divide(ctx: VMContext, is_: InstState) -> None:
     ce.dem.repinst = 0
     ctx.queues.num_cells += 1
     ctx.counters["births"] = ctx.counters.get("births", 0) + 1
+    ctx.counters["_birth_mother_id"] = ce.cell_id
     ctx.update_average_size()
     if ctx.notify_birth is not None:
-        ctx.notify_birth(nc.cell_id, nc.mm_s)
+        ctx.notify_birth(nc.cell_id, nc.mm_s, is_migrant=False)
     ce.cpu.fl.E = ce.cpu.fl.S = ce.cpu.fl.Z = 0

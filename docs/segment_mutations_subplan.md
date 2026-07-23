@@ -1,44 +1,21 @@
-# Subplan: segment mutations (cro / ins / del) — Phase 2b
+# Segment mutations (cro / ins / del)
 
-Status: **design only** — do not implement until this subplan is approved and scheduled.
+Status: **implemented** — port of `GeneticOps` from [`legacy/tierra/operator.c`](../legacy/tierra/operator.c).
 
-## Goal
+## Module
 
-Replace [`genetic_ops_stubs`](../pytierra/services/mutate.py) with C-faithful segment operators used in Tierra evolution (crossover / insert / delete of instruction segments).
+[`pytierra/services/mutate_segment.py`](../pytierra/services/mutate_segment.py)
 
-## C sources to map
+Call order after `mutation_ops_div` (matches C):
 
-| Concern | Likely C location under `legacy/tierra/` |
-|---------|------------------------------------------|
-| Genetic / segment ops | `instruct.c`, `operator.c`, related `genio` helpers |
-| Template / `adr` interaction | `decode.c` / template search already ported in `services/isa/template.py` |
-| Config rates | `GenPerCroInsSamSiz`, `GenPerInsIns`, `GenPerDelIns`, `GenPerCroIns`, `GenPerDelSeg`, `GenPerInsSeg`, `GenPerCroSeg` |
+1. `CrossoverInstSamSiz`
+2. `CrossoverInst`
+3. `InsertionInst`
+4. `DeletionInst`
+5. `CrossoverSeg`
+6. `InsertionSeg`
+7. `DeletionSeg`
 
-Exact function names must be confirmed by reading C before coding.
+`shared_gen_ops` assembles a temp genome then commits; same-size overwrites in place; resize probes `mem_alloc` first (soft-fail leaves `md` unchanged).
 
-## Implementation sketch
-
-1. Port one operator at a time (e.g. `InsIns` → `DelIns` → segment cro).
-2. Memory shift helpers on `SoupMemory` (insert/delete bytes inside owned `md_*` / `mm_*` with privilege checks).
-3. Update cell dem fields / IP if C does so after size change.
-4. Wire rates from `cfg_values` in `divide` path (where stubs are called today).
-
-## Synthetic verification
-
-- Build tiny genomes that force a known cro/ins/del site.
-- Compare resulting soup bytes to:
-  - a recorded golden from instrumented C, or
-  - a hand-computed expected buffer for the toy genome.
-- Acceptance: `0080aaa` with all segment `GenPer*=0` unchanged (current suite green).
-- Evolution: with high segment rates + fixed seed, size histogram / genotype diversity changes (non-flaky counter or length assert).
-
-## Risks
-
-- Memory shifts corrupting templates / `adr` targets.
-- Infinite loops if rate `% 1 == 0` (same GenPer pitfall as div mut).
-- Interaction with `mal` / reaper under fragmentation.
-
-## Exit criteria
-
-- Unit tests per operator + mut=0 acceptance green.
-- Docs: remove “stubs” from Known limitations; update `docs/api.md` Mutations section.
+Wired from [`ops_repro.divide`](../pytierra/services/isa/ops_repro.py). Rates: `GenPerCroInsSamSiz`, `GenPerCroIns`, `GenPerInsIns`, `GenPerDelIns`, `GenPerCroSeg`, `GenPerInsSeg`, `GenPerDelSeg` (default 0).

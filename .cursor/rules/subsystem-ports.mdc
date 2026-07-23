@@ -1,0 +1,13 @@
+---
+description: Dependency rules for genebank / observer / net subsystems
+alwaysApply: true
+---
+
+# Subsystem Ports
+
+- Protocols live in `pytierra/models/ports.py`.
+- `services/genebank`, `services/observer`, and `services/net` must **not** import `services.vm`.
+- Those packages must **not** import each other. Wire only through `TierraVM` / bootstrap and Protocol data.
+- ISA may call `genebank.dirty` helpers and `VMContext.notify_*` only — not RamBanker / DiskBank / Observer / NET logic.
+- Disk I/O stays in `adapters/`; deferred flush via write queue on VM boundary (`step` / `run` / `stop`).
+---

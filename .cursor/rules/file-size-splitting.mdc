@@ -8,4 +8,7 @@ alwaysApply: true
 - Prefer keeping modules under ~200 lines when avoidable.
 - Split ISA ops into `pytierra/services/isa/ops_*.py` rather than one giant instruct module.
 - Allowed exceptions: generated files; state briefly when exceeding the guideline.
+- Genebank / observer aggregators (`rambank.py`, `diskbank.py`, `services/vm/service.py`) may exceed
+  ~200 lines when keeping C-algorithm cohesion; prefer extracting helpers
+  (`hashutil`, `labels`, `write_queue`, `index_io`) and add a short module docstring noting why.
 ---

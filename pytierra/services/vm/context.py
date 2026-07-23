@@ -4,12 +4,18 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import Any, Callable
+from typing import Any, Callable, Protocol
 
 from pytierra.models.cell import Cell
 from pytierra.services.memory.queues import CellQueues
 from pytierra.services.memory.soup import SoupMemory
 from pytierra.services.rng import TierraRNG
+
+
+class NotifyBirthFn(Protocol):
+    def __call__(
+        self, cell_id: int, size: int, *, is_migrant: bool = False
+    ) -> None: ...
 
 
 @dataclass
@@ -49,7 +55,7 @@ class VMContext:
     alloc_cell: Callable[[], Cell | None]
     reap_one: Callable[[], bool]
     update_average_size: Callable[[], None]
-    notify_birth: Callable[[int, int], None] | None = None
+    notify_birth: NotifyBirthFn | None = None
     notify_death: Callable[[int], None] | None = None
     bitbucket: int = 0
 

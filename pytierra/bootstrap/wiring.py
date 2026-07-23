@@ -57,6 +57,16 @@ def build_vm_from_config(
     omp = load_opcode_map(map_path)
     vm = TierraVM(config=cfg, asset_root=root, opcode_map=omp, limits=limits)
     load_genomes_into_vm(vm, gb)
+    if int(cfg.get("DiskBank", 0) or 0):
+        from pytierra.adapters.filesystem.diskbank import DiskBankStore
+
+        store = DiskBankStore(
+            gb,
+            opcode_map=omp,
+            backend=str(cfg.get("DiskBankBackend", "json")).lower(),
+            fmt=str(cfg.get("DiskBankFormat", "ascii")).lower(),
+        )
+        vm.attach_disk_bank(store)
     logger.info(
         "TierraVM.from_config source=%s soup_size=%d",
         source,

@@ -40,6 +40,8 @@ _KNOWN = {
     "GenPerDelSeg", "GenPerInsSeg", "GenPerCroSeg", "MutBitProp",
     "MemModeFree", "MemModeMine", "MemModeProt", "DivSameGen", "DivSameSiz",
     "debug", "DiskBank", "GeneBnker", "TierraLog",
+    "SavMinNum", "SavThrMem", "SavThrPop", "CumGeneBnk",
+    "DiskBankFormat", "DiskBankBackend", "MateSizeEp",
 }
 
 
@@ -126,6 +128,15 @@ def parse_soup_in(text: str) -> TierraConfig:
         "MemModeProt": 2,
         "DivSameGen": 0,
         "DivSameSiz": 0,
+        "DiskBank": 0,
+        "GeneBnker": 0,
+        "SavMinNum": 10,
+        "SavThrMem": 0.02,
+        "SavThrPop": 0.02,
+        "CumGeneBnk": 0,
+        "DiskBankFormat": "ascii",
+        "DiskBankBackend": "json",
+        "MateSizeEp": 1,
     }
     for k, v in defaults.items():
         cfg.values.setdefault(k, v)

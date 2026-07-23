@@ -5,6 +5,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
+from pytierra.services.genebank.dirty import mark_genome_dirty
 from pytierra.services.mutate import mut_site
 
 if TYPE_CHECKING:
@@ -27,6 +28,8 @@ def movii(ctx: VMContext, is_: InstState) -> None:
         ce.cpu.fl.E = 1
         return
     ctx.mem.soup[dval] = ctx.mem.soup[sval]
+    if ce.mm_p <= dval < ce.mm_p + ce.mm_s:
+        mark_genome_dirty(ce)
     if ctx.rate_mov_mut and ctx.count_mov_mut >= 0:
         ctx.count_mov_mut += 1
         if ctx.count_mov_mut >= ctx.rate_mov_mut:
@@ -41,6 +44,8 @@ def movii(ctx: VMContext, is_: InstState) -> None:
             ctx.count_mov_mut = ctx.rng.tlrand() % ctx.rate_mov_mut
             ctx.counters["TotMovMut"] = ctx.counters.get("TotMovMut", 0) + 1
             ce.dem.nonslfmut = 1
+            mark_genome_dirty(ce)
+            ctx.counters["_daughter_genome_dirty"] = 1
     if ce.md_s and ce.md_p <= dval < ce.md_p + ce.md_s:
         coffset = dval - ce.md_p
         if not ce.dem.mov_daught:

@@ -20,3 +20,6 @@ core_out*
 soup_out*
 break.*
 *.log
+
+# Generated viz outputs
+viz/

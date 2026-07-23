@@ -15,6 +15,11 @@ logger = logging.getLogger(__name__)
 
 
 def take_snapshot(vm: Any) -> dict[str, Any]:
+    banker_snap = vm.genebank.snapshot() if getattr(vm, "genebank", None) else {
+        "banker_version": 1,
+        "enabled": False,
+        "genotypes": [],
+    }
     return {
         "soup": vm.mem.snapshot(),
         "cells": [c.snapshot() for c in vm.cells],
@@ -41,6 +46,9 @@ def take_snapshot(vm: Any) -> dict[str, Any]:
         "config": dict(vm.config.values),
         "inoculum": list(vm.config.inoculum),
         "place_center": vm.config.place_center,
+        "banker_version": banker_snap.get("banker_version", 1),
+        "genebank": banker_snap,
+        "write_queue": vm.write_queue.snapshot() if getattr(vm, "write_queue", None) else {},
     }
 
 
@@ -85,6 +93,10 @@ def restore_snapshot(vm: Any, snap: dict[str, Any]) -> None:
         vm.count_flaw = r["count_flaw"]
         vm.stopped = bool(snap.get("stopped", False))
         vm._started = True
+        if getattr(vm, "genebank", None) is not None and "genebank" in snap:
+            vm.genebank.restore(snap["genebank"])
+        if getattr(vm, "write_queue", None) is not None and "write_queue" in snap:
+            vm.write_queue.restore(snap["write_queue"])
     except StateError:
         logger.error("Restore failed: invalid snapshot", extra={"event": "state_error"})
         raise

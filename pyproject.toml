@@ -18,6 +18,11 @@ dev = [
     "bandit>=1.7",
     "vulture>=2.11",
 ]
+viz = [
+    "matplotlib>=3.7",
+    "pandas>=2.0",
+    "networkx>=3.0",
+]
 
 [tool.setuptools.packages.find]
 include = ["pytierra*"]

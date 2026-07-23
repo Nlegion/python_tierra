@@ -5,8 +5,10 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, Any
 
+from pytierra.models.cell import Cell
+from pytierra.services.genebank.dirty import mark_genome_dirty
+
 if TYPE_CHECKING:
-    from pytierra.models.cell import Cell
     from pytierra.services.memory.soup import SoupMemory
     from pytierra.services.rng import TierraRNG
 
@@ -58,11 +60,14 @@ def mutation_ops_div(
     inst_num: int,
     inst_bit_num: int,
     counters: dict[str, Any],
-) -> None:
+) -> bool:
+    """Return True if any divide-time mutation was applied."""
     if not gen_per_div_mut:
-        return
+        return False
+    mutated = False
     while gen_per_div_mut and (rng.tlrand() % gen_per_div_mut) == 0:
         counters["TotDivMut"] = counters.get("TotDivMut", 0) + 1
+        mutated = True
         dstart = cell.md_p + cell.dem.MovOffMin
         dsize = cell.dem.MovOffMax - cell.dem.MovOffMin + 1
         if dsize <= 0:
@@ -76,19 +81,18 @@ def mutation_ops_div(
             inst_num=inst_num,
             inst_bit_num=inst_bit_num,
         )
+    return mutated
 
 
-def genetic_ops_stubs(counters: dict[str, Any], cfg_values: dict) -> None:
-    """Segment cro/ins/del stubs: bump counters only."""
-    for key in (
-        "GenPerCroInsSamSiz",
-        "GenPerInsIns",
-        "GenPerDelIns",
-        "GenPerCroIns",
-        "GenPerDelSeg",
-        "GenPerInsSeg",
-        "GenPerCroSeg",
-    ):
-        rate = int(cfg_values.get(key, 0) or 0)
-        if rate:
-            counters[f"stub_{key}"] = counters.get(f"stub_{key}", 0) + 1
+def apply_segment_mutation_for_tests(
+    cell: Cell,
+    mem: SoupMemory,
+    *,
+    addr_offset: int = 0,
+    new_byte: int = 0x3F,
+) -> None:
+    """Test helper: point-edit genome and mark dirty (for RamBanker path tests)."""
+    g0 = cell.mm_p + cell.dem.mg_p
+    addr = mem.ad(g0 + addr_offset)
+    mem.soup[addr] = new_byte & 0xFF
+    mark_genome_dirty(cell)

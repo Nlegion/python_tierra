@@ -23,6 +23,12 @@ ops_ctrl.tcall
 ops_repro.malchm
 ops_repro.divide
 
+from pytierra.models.ports import GeneBankPort, MigrationPort, ObserverPort  # noqa: F401
+
+GeneBankPort
+ObserverPort
+MigrationPort
+
 from pytierra import TierraVM, SandboxLimitError  # noqa: F401
 from pytierra.core.errors import (  # noqa: F401
     AssetError,

@@ -45,6 +45,8 @@ class Dem:
     dm: int = 0  # 0 mother, 1 daughter
     nonslfmut: int = 0
     daughter_id: int = -1  # index of pending daughter cell, else -1
+    genome_hash: int | None = None
+    genome_hash_dirty: bool = True
 
 
 @dataclass

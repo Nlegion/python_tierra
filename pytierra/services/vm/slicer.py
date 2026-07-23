@@ -54,15 +54,21 @@ def time_slice(vm: Any, ce: Any, size_slice: int) -> None:
         if vm.rate_mut:
             vm.count_mut += 1
             if vm.count_mut >= vm.rate_mut:
-                cosmic_mutate(
+                addr = cosmic_mutate(
                     vm.mem,
                     rng=vm.rng,
                     mut_bit_prop=float(vm.config.get("MutBitProp", 0.2)),
                     inst_num=vm.opcode_map.inst_num,
                     inst_bit_num=max(1, (vm.opcode_map.inst_num - 1).bit_length()),
                 )
+                from pytierra.services.genebank.dirty import mark_cells_dirty_at
+
+                mark_cells_dirty_at(vm.cells, addr)
                 vm.counters["TotMut"] = vm.counters.get("TotMut", 0) + 1
                 vm.count_mut = vm.rng.tlrand() % vm.rate_mut
+        until = getattr(vm, "_until_births", None)
+        if until is not None and vm.counters.get("births", 0) >= until:
+            break
 
 
 def slicer_step(vm: Any) -> None:
@@ -82,5 +88,7 @@ def slicer_step(vm: Any) -> None:
     size_slice = int(fix * base) + (vm.rng.tlrand() % (int(ran * base) + 1))
     if vm.config.slice_style == 0:
         size_slice = base
+    # Avoid zero-length slices (would stall run()/step when InstExe does not advance).
+    size_slice = max(1, size_slice)
     time_slice(vm, ce, size_slice)
     vm.queues.incr_slice_queue(vm.cells)
