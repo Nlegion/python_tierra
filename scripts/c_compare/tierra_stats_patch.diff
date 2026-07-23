@@ -1,0 +1,18 @@
+*** Begin Patch
+*** Add File: tierra_stats_dump.h
++/* Optional metrics dump for Python Tierra-VM comparison.
++ * Apply this patch to a working C Tierra tree (not required for pristine legacy/).
++ * Call TierraDumpStatsJson("c_stats.json") after the desired InstExe/births.
++ */
++#ifndef TIERRA_STATS_DUMP_H
++#define TIERRA_STATS_DUMP_H
++void TierraDumpStatsJson(const char *path);
++#endif
+*** End Patch
+
+# Notes for implementers applying to tierra.c:
+# 1. Track first-birth InstExe when fecundity/births increments.
+# 2. Periodically append timeline samples every K instructions.
+# 3. Dump JSON with keys: seed, first_birth_InstExe, final{NumCells,InstExe,births,deaths},
+#    size_histogram, timeline[].
+# Exact insertion points depend on your Tierra build; this file documents the contract.

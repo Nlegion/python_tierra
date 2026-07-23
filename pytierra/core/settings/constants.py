@@ -1,0 +1,39 @@
+﻿# Derivative work of Tierra Simulator — see legacy/tierra/license.h
+"""Central defaults for Tierra-VM."""
+
+NUMREG = 6
+STACK_SIZE = 10
+PLOIDY = 1
+
+REG_A = 0
+REG_B = 1
+REG_C = 2
+REG_D = 3
+REG_E = 4
+REG_F = 5
+
+DEFAULT_SOUP_SIZE = 60_000
+DEFAULT_SLICE_SIZE = 25
+DEFAULT_SLICE_STYLE = 2
+DEFAULT_MAL_MODE = 1
+DEFAULT_SEARCH_LIMIT = 5.0
+DEFAULT_MOV_PROP_THR_DIV = 0.7
+DEFAULT_MIN_CELL_SIZE = 12
+DEFAULT_MIN_GEN_MEM_SIZ = 12
+DEFAULT_MIN_TEMPL_SIZE = 1
+DEFAULT_MAX_MAL_MULT = 3.0
+DEFAULT_MAL_TOL = 20
+DEFAULT_LAZY_TOL = 10
+DEFAULT_NUM_CELLS_MIN = 1
+
+DEFAULT_LIMIT_CHECK_EVERY = 1000
+DEFAULT_TRACE_CAPACITY = 10_000
+DEFAULT_MAX_INSTRUCTIONS = 10_000_000
+DEFAULT_MAX_CELLS = 10_000
+DEFAULT_MAX_SOUP_SIZE = 2_000_000
+DEFAULT_WALL_TIME_S = 120.0
+
+LICENSE_NOTICE = (
+    "Derivative work of Tierra Simulator by Thomas S. Ray / Virtual Life. "
+    "See legacy/tierra/license.h. Altered: Python reimplementation of core VM."
+)

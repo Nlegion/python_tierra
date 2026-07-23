@@ -1,0 +1,27 @@
+---
+description: Project safety and destructive command guardrails
+alwaysApply: true
+---
+
+# Safety Rules
+
+## Destructive commands require explicit approval
+
+Do not run without explicit user confirmation:
+
+- Recursive delete of project trees outside planned cleanup
+- History-rewriting git (`git reset --hard`, force push, branch deletion)
+- Bulk process termination that may affect active services
+
+## Tierra-specific
+
+- Treat `legacy/` C sources as read-only reference unless the user asks to change them.
+- The Python VM must not call `os.system`, subprocess shells, or open network sockets.
+- Never print or commit secrets from `.env`.
+- Do not commit soup dumps, core dumps, or `.cursor/artifacts/` corpora.
+
+## Security baseline
+
+- Avoid hardcoded secrets.
+- Avoid `shell=True` with untrusted input.
+---

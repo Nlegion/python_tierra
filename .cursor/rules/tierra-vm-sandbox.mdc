@@ -1,0 +1,14 @@
+---
+description: Tierra-VM sandbox and API boundary
+globs: pytierra/**/*.py
+alwaysApply: true
+---
+
+# Tierra-VM Sandbox
+
+- External entry point is `TierraVM` (`start` / `step` / `stop` / `snapshot` / `restore`).
+- `SandboxLimitError` must not corrupt VM state; allow `set_limits` then continue.
+- No host shell, subprocess, or sockets from VM code.
+- Asset reads (config / `.tie` / `opcode.map`) only from allowed roots at construction time.
+- Soup is a fixed-size `bytearray`; genomes are interpreted, never compiled to native code.
+---

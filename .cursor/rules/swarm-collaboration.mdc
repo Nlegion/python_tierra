@@ -1,0 +1,23 @@
+---
+description: Multi-agent orchestration policy (optional)
+alwaysApply: false
+---
+
+# Swarm Collaboration
+
+Use only when multi-agent delegation is active.
+
+## Bootstrap
+
+1. `AGENTS.md`
+2. Relevant `.cursor/rules/*.mdc`
+
+## Output format (delegated agents only)
+
+- Plan / Assumptions / Questions / Result
+
+## Roles
+
+- Implementers work in `pytierra/**`, `tests/**`, `examples/**`.
+- `frontend-dev` is inactive for MVP.
+---

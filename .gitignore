@@ -1,0 +1,22 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+.pytest_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+dist/
+build/
+
+# Local Cursor artifacts (do not commit foreign project dumps)
+.cursor/artifacts/
+
+# Tierra runtime dumps
+*.core
+core_out*
+soup_out*
+break.*
+*.log

@@ -1,0 +1,11 @@
+---
+description: Centralize reusable constants and defaults
+alwaysApply: true
+---
+
+# Application Constants
+
+- Defaults and ISA limits live in `pytierra/constants.py`.
+- Config defaults may also appear in `pytierra/config.py` parsers; do not scatter magic numbers across ops modules.
+- Secrets must come from the environment, never constants files.
+---

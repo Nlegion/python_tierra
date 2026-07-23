@@ -1,0 +1,12 @@
+---
+description: Legacy C Tierra sources are read-only reference
+globs: legacy/**/*
+alwaysApply: false
+---
+
+# Legacy C Mirror Policy
+
+- `legacy/` holds the pristine Tierra v6.02 mirror and related trees (Beagle, MSVC, docs).
+- Do not modify `legacy/**` unless the user explicitly requests it.
+- Prefer porting semantics into `pytierra/` over patching the C tree.
+---

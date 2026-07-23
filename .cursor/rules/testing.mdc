@@ -1,0 +1,16 @@
+---
+description: pytest standards for Tierra-VM
+globs: "**/test_*.py"
+alwaysApply: true
+---
+
+# Testing Policy
+
+- Use pytest under `tests/`.
+- Every test must assert an observable outcome.
+- No bare `except:`.
+- Prefer deterministic fixtures: fixed RNG seed; mutation/flaw rates = 0 for replication tests.
+- Cover exceptions (`TierraError` family), logging boundary (no `pytierra.services.isa` logs in hot path), and soft resource limits (`max_cells`).
+- Package coverage: `pytest --cov=pytierra --cov-fail-under=85`.
+- Full gate: see `release-quality-gates.mdc` / `scripts/quality_gates.*`.
+---

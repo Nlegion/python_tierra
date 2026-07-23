@@ -1,0 +1,13 @@
+---
+description: Optional incident artifact workflow
+alwaysApply: false
+globs: ".cursor/artifacts/**,logs/**"
+---
+
+# Log Incident Registry (Optional)
+
+When explicitly doing incident triage:
+
+1. Check `.cursor/artifacts/` for prior notes on the same symptom.
+2. Save a short timestamped summary after the work.
+---

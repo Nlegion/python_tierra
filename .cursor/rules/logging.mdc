@@ -1,0 +1,27 @@
+---
+description: Logging and exception policy for Tierra-VM
+globs: "**/*.py"
+alwaysApply: true
+---
+
+# Logging And Exceptions
+
+## Logging
+
+- Use stdlib `logging` on the API/config boundary (`vm.py`, loaders, `logging_setup.py`).
+- Message style: %-formatting with args, e.g. `logger.info("start seed=%d", seed, extra={"event": "start"})`.
+- Key lifecycle events (`start`, `stop`, `set_limits`, `enable_trace`, `restore`): INFO + `extra={"event": "..."}`.
+- Birth/death bookkeeping: DEBUG only.
+- Do **not** log inside the instruction hot path (`services.vm.slicer` / `pytierra.services.isa.*`).
+- Use `trace.py` ring buffer for instruction-level debug when enabled.
+- `configure_logging()` must be idempotent (no-op if root already has handlers).
+- No bare `except:`; no silent `except ...: pass`.
+- Do not use `print()` as runtime logging in library code.
+
+## Exceptions (`pytierra.core.errors`)
+
+- `SandboxLimitError`: host budgets only (`max_instructions`, `wall_time_s`) and create-time `max_soup_size`.
+- Runtime resource limits (`max_cells`, soup-full `mal`): soft-fail (`fl.E` / no birth), do not raise SLE.
+- `ConfigError` / `AssetError` / `StateError` for user/API mistakes.
+- `InternalError` only for simulator invariant violations.
+---

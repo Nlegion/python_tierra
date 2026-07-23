@@ -1,0 +1,12 @@
+---
+description: Prefer keyword arguments in multi-parameter calls
+globs: "**/*.py"
+alwaysApply: true
+---
+
+# Keyword Arguments
+
+- For calls with 3+ parameters, use named arguments unless positional form is clearer.
+- For optional parameters, prefer named arguments.
+- For obvious 1–2 parameter calls (`len(x)`, `min(a, b)`), positional is fine.
+---

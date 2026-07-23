@@ -1,0 +1,11 @@
+---
+description: Keep files focused and avoid oversized modules
+alwaysApply: true
+---
+
+# File Size And Decomposition
+
+- Prefer keeping modules under ~200 lines when avoidable.
+- Split ISA ops into `pytierra/services/isa/ops_*.py` rather than one giant instruct module.
+- Allowed exceptions: generated files; state briefly when exceeding the guideline.
+---

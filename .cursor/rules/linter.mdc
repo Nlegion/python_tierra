@@ -1,0 +1,16 @@
+---
+description: Lint hygiene for Python changes
+globs: "**/*.py"
+alwaysApply: true
+---
+
+# Lint Checklist
+
+Before finalizing Python changes:
+
+- No commented-out dead code
+- Specific exceptions; no bare `except:`
+- Type hints on new public APIs when practical
+- Run `ruff check pytierra tests` when available
+- Avoid `# noqa` without a reason
+---

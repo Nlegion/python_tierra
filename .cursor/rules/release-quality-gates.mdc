@@ -1,0 +1,21 @@
+---
+description: Mandatory quality gates for Tierra-VM
+alwaysApply: true
+---
+
+# Release Quality Gates
+
+Before declaring a change ready, run the **full** gate from the repository root
+(or `scripts/quality_gates.ps1` / `scripts/quality_gates.sh`):
+
+```powershell
+ruff check pytierra tests examples
+bandit -r pytierra -q -c pyproject.toml
+vulture pytierra tests examples .vulture_whitelist.py --min-confidence 80
+pytest tests -q --cov=pytierra --cov-fail-under=85
+```
+
+- Prefer minimal, compatibility-preserving fixes when checks fail.
+- Do not skip gates silently; record any unavoidable skip and rationale.
+- Package coverage target is ≥85% for `pytierra` as a whole (not per-file).
+---
